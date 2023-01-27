@@ -5,3 +5,11 @@
 #
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
+UserType.destroy_all
+UserType.create([{
+    type_name: "Member"
+},
+{
+    type_name: "Librarian"
+}])
+p "Created #{UserType.count} UserTypes"
