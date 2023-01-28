@@ -3,6 +3,7 @@ class ApplicationController < ActionController::API
 
     before_action :authenticate_request
 
+
     private 
         # Method that decodes token and cheks if user is authorized
         def authenticate_request

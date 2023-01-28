@@ -153,6 +153,10 @@ GEM
       thor (~> 1.0)
       zeitwerk (~> 2.5)
     rake (13.0.6)
+    ransack (3.2.1)
+      activerecord (>= 6.1.5)
+      activesupport (>= 6.1.5)
+      i18n
     reline (0.3.2)
       io-console (~> 0.5)
     sqlite3 (1.6.0-x64-mingw-ucrt)
@@ -165,6 +169,7 @@ GEM
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    will_paginate (3.3.1)
     zeitwerk (2.6.6)
 
 PLATFORMS
@@ -179,8 +184,10 @@ DEPENDENCIES
   jwt
   puma (~> 5.0)
   rails (~> 7.0.4, >= 7.0.4.2)
+  ransack (~> 3.2, >= 3.2.1)
   sqlite3 (~> 1.4)
   tzinfo-data
+  will_paginate (~> 3.3, >= 3.3.1)
 
 RUBY VERSION
    ruby 3.1.3p185

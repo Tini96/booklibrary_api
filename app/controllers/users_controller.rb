@@ -6,12 +6,12 @@ class UsersController < ApplicationController
     # GET /users
     def index
         @users = User.all
-        render json: @users, status: :ok
+        render json: @users, include: '*', status: :ok
     end
 
     # GET /users/{username}
     def show
-        render json: @user, status: :ok
+        render json: @user, include: '*', status: :ok
     end
 
     # POST /users

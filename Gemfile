@@ -22,6 +22,10 @@ gem 'active_model_serializers', '~> 0.10.13'
 
 gem 'faker', '~> 3.1'
 
+gem 'will_paginate', '~> 3.3', '>= 3.3.1'
+
+gem 'ransack', '~> 3.2', '>= 3.2.1'
+
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
 
