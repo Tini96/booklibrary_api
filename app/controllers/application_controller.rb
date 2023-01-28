@@ -4,6 +4,7 @@ class ApplicationController < ActionController::API
     before_action :authenticate_request
 
     private 
+        # Method that decodes token and cheks if user is authorized
         def authenticate_request
             begin
                 header = request.headers["Authorization"]
@@ -16,7 +17,7 @@ class ApplicationController < ActionController::API
                 render json: { errors: "unauthorized"}, status: :unauthorized
             end
         end
-
+        # Permission method that cheks if user ia a librarian
         def librarian_permission
             if UserType.find_by_type_name("Librarian").id != @current_user.user_type_id
                 render json: { errors: "Forbidden"}, status: :unauthorized
