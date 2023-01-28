@@ -21,7 +21,6 @@ class BooksController < ApplicationController
     # POST /books
     def create
         book_data = book_params
-        puts(book_data)
         book_data["author_id"] = params[:data][:relationships][:author][:data][:id]
         @book = Book.new(book_data)
         if @book.save

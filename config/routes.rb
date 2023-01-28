@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   get '/profile', to: 'users#show'
 
   resources :books
+  resources :authors
 
   
 end
