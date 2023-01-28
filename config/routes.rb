@@ -1,9 +1,13 @@
 Rails.application.routes.draw do
+  resources :user_type, only: [:index]
 
-  resources :users
   post '/auth/login', to: 'authentication#login'
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Defines the root path route ("/")
-  # root "articles#index"
+  get '/users', to: 'users#index'
+  post '/register', to: 'users#create', as: 'register'
+  delete '/profile', to: 'users#destroy'
+  put '/profile', to: 'users#update'
+  get '/profile', to: 'users#show'
+
+  
 end
