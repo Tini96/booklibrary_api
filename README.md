@@ -5,10 +5,11 @@
 
 ruby "3.1.3"
 
-## System dependencies
+## Dependencies
 
 rails  7.0.4
-sqlite3 1.4"
+
+sqlite3 1.4.0
 
 ## Configuration
 
