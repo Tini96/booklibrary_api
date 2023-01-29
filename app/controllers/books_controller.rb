@@ -1,5 +1,5 @@
 class BooksController < ApplicationController
-    before_action :librarian_permission, only: [:show, :destroy, :update, :create]
+    before_action :librarian_permission, only: [:show, :destroy, :update, :create, :out_of_stock]
     before_action :set_book, only: [:show, :destroy, :update]
 
     # GET/books
@@ -47,6 +47,17 @@ class BooksController < ApplicationController
     # DELETE /books/{:id}
     def destroy
         @book.destroy
+    end
+
+    # GET /out-of-stock
+
+    def out_of_stock
+
+        books_loaned = Loan.where(is_returned: false).group(:book_id).count
+        books_out_of_stock = books_loaned.select { |book_id, count| count == Book.find(book_id).hard_copies }.keys
+        books = Book.where(id: books_out_of_stock).paginate(page: params[:page], per_page: params[:page_size])
+
+        render json: books, include: '*', status: :ok
     end
 
     private

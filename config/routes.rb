@@ -13,5 +13,7 @@ Rails.application.routes.draw do
   resources :authors
   resources :loans
 
+  get '/out-of-stock', to: 'books#out_of_stock'
+
   
 end
