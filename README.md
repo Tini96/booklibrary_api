@@ -51,6 +51,39 @@ After registration, the user logs in with email and password
 ```
 POST auth/login
 ```
+
+### Members
+they are allowed to:
+
+* search books and authors by term parametar
+
+```
+GET /books
+GET /authors
+```
+
+* see all their loans
+```
+GET /loans
+```
+
+### Librarians
+they are allowed to:
+
+* search, update, delete users, authors and books (add books and authors)
+
+```
+GET/PUT/POST/DELETE /users
+GET/PUT/POST/DELETE /authors
+GET/PUT/POST/DELETE /books
+```
+
+* search, update, add, delete loans and see which books are out of stock
+
+```
+GET/PUT/POST/DELETE /loans
+GET /out-of-stock
+```
 ## Testing
 
 create and migrate test database
