@@ -1,5 +1,11 @@
+Loan.destroy_all
+User.destroy_all
 UserType.destroy_all
-UserType.create([{
+Book.destroy_all
+Author.destroy_all
+
+
+UserType.create!([{
     type_name: "Member"
 },
 {
@@ -10,59 +16,31 @@ p "Created #{UserType.count} UserTypes"
 librarian_id = UserType.find_by_type_name("Librarian").id
 member_id = UserType.find_by_type_name("Member").id
 
-User.destroy_all
-User.create([{
-    name: "Anna",
-    username: "anna",
-    email: "anna@librarian.com",
-    password: "anna321",
-    user_type_id: librarian_id
-},
-{
-    name: "Marc",
-    username: "marc",
-    email: "marc@librarian.com",
-    password: "marc321",
-    user_type_id: librarian_id
-},
-{
-    name: "Lucas",
-    username: "lucas",
-    email: "lucas@member.com",
-    password: "lucas321",
-    user_type_id: member_id
-},
-{
-    name: "Pier",
-    username: "pier",
-    email: "pier@member.com",
-    password: "pier321",
-    user_type_id: member_id
-},
-{
-    name: "Leo",
-    username: "leo",
-    email: "leo@member.com",
-    password: "leo321",
-    user_type_id: member_id
-},{
-    name: "Sarah",
-    username: "sarah",
-    email: "sarah@member.com",
-    password: "sarah321",
-    user_type_id: member_id
-},
-{
-    name: "Bertha",
-    username: "bertha",
-    email: "bertha@member.com",
-    password: "bertha321",
-    user_type_id: member_id
-}])
+
+
+10.times do
+    User.create(
+      name: Faker::Name.name,
+      username: Faker::Internet.username,
+      email: Faker::Internet.email,
+      password: Faker::Internet.password,
+      user_type_id: member_id
+    )
+end
+5.times do
+    User.create(
+      name: Faker::Name.name,
+      username: Faker::Internet.username,
+      email: Faker::Internet.email,
+      password: Faker::Internet.password,
+      user_type_id: librarian_id
+    )
+end
 
 p "Created #{User.count} Users"
 
-Author.destroy_all
+#Create 10 authors with 10 books each
+
 10.times do |i|
     author = Author.create!(name: Faker::Name.name)
     10.times do |j|
@@ -72,3 +50,21 @@ Author.destroy_all
 
  p "Created #{Author.count} Authors"
  p "Created #{Book.count} Books"
+
+
+ #Make out of stock 
+loan_users = User.where(user_type_id: member_id).first(3)
+author1 = Author.create!(name: Faker::Name.name)
+book1 = Book.create!(title: Faker::Book.title, hard_copies: 3, author: author1)
+loan_users.each do |user|
+    Loan.create!(user: user, book: book1, is_returned: false)
+end
+
+#5 users booking 5 books
+loan_users = User.where(user_type_id: member_id).take(5)
+loan_books = Book.take(5)
+loan_users.each_with_index do |user, index|
+    Loan.create!(user: user, book: loan_books[index], is_returned: false)
+end
+
+p "Created #{Loan.count} Loans"

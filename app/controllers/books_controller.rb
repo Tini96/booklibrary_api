@@ -24,7 +24,7 @@ class BooksController < ApplicationController
         book_data["author_id"] = params[:data][:relationships][:author][:data][:id]
         @book = Book.new(book_data)
         if @book.save
-            render json: @book, include: '*', status: :created
+            render json: @book,  status: :created
         else
             render json: { errors: @book.errors.full_messages },
             status: :unprocessable_entity
@@ -42,7 +42,7 @@ class BooksController < ApplicationController
                 status: :unprocessable_entity
         end
         
-        render json: @book, include: '*', status: :ok 
+        render json: @book,  status: :ok 
     end
 
     # DELETE /books/{:id}

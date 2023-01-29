@@ -22,7 +22,7 @@ class AuthorsController < ApplicationController
     def create
         @author = Author.new(author_params)
         if @author.save
-            render json: @author, include: '*', status: :created
+            render json: @author, status: :created
         else
             render json: { errors: @author.errors.full_messages },
             status: :unprocessable_entity
@@ -38,7 +38,7 @@ class AuthorsController < ApplicationController
                 status: :unprocessable_entity
         end
         
-        render json: @author, include: '*', status: :ok 
+        render json: @author,  status: :ok 
     end
 
     # DELETE /author/{:id}
