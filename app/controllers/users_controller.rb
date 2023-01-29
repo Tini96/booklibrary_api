@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
     skip_before_action :authenticate_request, only: [:create]
     before_action :set_user, only: [:show, :destroy, :update]
-    before_action :librarian_permission, only: [:index]
+    before_action :librarian_permission, only: [:show, :destroy, :update, :index]
 
     # GET /users
     def index
@@ -49,7 +49,7 @@ class UsersController < ApplicationController
             params.require(:data).require(:attributes).permit(:name, :username, :email, :user_type_id, :password)
         end
         def set_user
-            @user = @current_user
+            @user = User.find_by(username: params[:username])
             if !@user
                 render json: { errors: 'User not found' }, status: :not_found
             end

@@ -1,24 +1,72 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
 
-Things you may want to cover:
+## Ruby version
 
-* Ruby version
+ruby "3.1.3"
 
-* System dependencies
+## System dependencies
 
-* Configuration
+"rails", "~> 7.0.4", ">= 7.0.4.2"
+"sqlite3", "~> 1.4"
 
-* Database creation
+## Configuration
 
-* Database initialization
+Prerequirements: ruby, rails and sqlite3
+Install all gems
 
-* How to run the test suite
+```
+bundle install
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+## Database creation
 
-* Deployment instructions
+Create database and  run migrations.
 
-* ...
+```
+rake db:create
+rake db:migrate
+```
+ 
+
+## Database initialization
+
+Populate database with some dummy data.
+
+```
+rails db:seed
+```
+
+## API
+When creating a new user, you first need to find the user type id (2 types: Librarian and Member)
+
+GET /user_type
+
+Then register a new user
+
+POST /register
+
+After registration, the user logs in
+
+POST auth/login
+
+## Testing
+
+create and migrate test database
+
+```
+rake db:create RAILS_ENV=test
+rake db:migrate RAILS_ENV=test
+```
+Populate test database with fixtures
+
+```
+rails db:fixtures:load RAILS_ENV=test
+```
+
+### Model tests:
+models/loan_test.rb
+models/user_test.rb
+
+### Integration test:
+integration/loans_test.rb

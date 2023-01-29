@@ -3,11 +3,8 @@ Rails.application.routes.draw do
 
   post '/auth/login', to: 'authentication#login'
 
-  get '/users', to: 'users#index'
   post '/register', to: 'users#create', as: 'register'
-  delete '/profile', to: 'users#destroy'
-  put '/profile', to: 'users#update'
-  get '/profile', to: 'users#show'
+  resources :users, param: :username, only: [:index, :destroy, :update, :show]
 
   resources :books
   resources :authors
