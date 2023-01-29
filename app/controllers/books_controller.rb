@@ -36,7 +36,6 @@ class BooksController < ApplicationController
     def update
         book_data = book_params
         book_data["author_id"] = params[:data][:relationships][:author][:data][:id]
-        @book
         unless @book.update(book_data)
             render json: { errors: @book.errors.full_messages},
                 status: :unprocessable_entity

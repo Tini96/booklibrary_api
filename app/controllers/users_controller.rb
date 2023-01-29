@@ -5,7 +5,7 @@ class UsersController < ApplicationController
 
     # GET /users
     def index
-        @users = User.all
+        @users = User.all.paginate(page: params[:page], per_page: params[:page_size])
         render json: @users, include: '*', status: :ok
     end
 

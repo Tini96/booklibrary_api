@@ -19,18 +19,19 @@ member_id = UserType.find_by_type_name("Member").id
 
 
 10.times do
-    User.create(
+    User.create!(
       name: Faker::Name.name,
-      username: Faker::Internet.username,
+      username: Faker::Internet.username.gsub(/[^a-zA-Z0-9]/, ''),
       email: Faker::Internet.email,
       password: Faker::Internet.password,
       user_type_id: member_id
     )
 end
+
 5.times do
-    User.create(
+    User.create!(
       name: Faker::Name.name,
-      username: Faker::Internet.username,
+      username: Faker::Internet.username.gsub(/[^a-zA-Z0-9]/, ''),
       email: Faker::Internet.email,
       password: Faker::Internet.password,
       user_type_id: librarian_id
@@ -61,7 +62,7 @@ loan_users.each do |user|
 end
 
 #5 users booking 5 books
-loan_users = User.where(user_type_id: member_id).take(5)
+loan_users = User.where(user_type_id: member_id).last(5)
 loan_books = Book.take(5)
 loan_users.each_with_index do |user, index|
     Loan.create!(user: user, book: loan_books[index], is_returned: false)
