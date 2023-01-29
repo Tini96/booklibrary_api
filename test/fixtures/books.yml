@@ -1,11 +1,21 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  title: MyString
+  title: "Book 1"
   hard_copies: 1
   author: one
 
 two:
-  title: MyString
+  title: "Book 2"
   hard_copies: 1
   author: two
+
+three:
+  title: "Book 3"
+  hard_copies: 2
+  author: two
+
+four:
+  title: "Book 4"
+  hard_copies: 2
+  author: one
