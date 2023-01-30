@@ -23,6 +23,7 @@ class LoansTest < ActionDispatch::IntegrationTest
     book = books(:four)
     post '/loans', params: json(user.id, book.id), headers: { 'Authorization': "Bearer #{@token}" } 
     assert_response :unprocessable_entity
+    assert_equal 'The user has reached the maximum book borrowing limit.', JSON.parse(@response.body)['error']
   end
 
   test "book out of stock" do
@@ -30,6 +31,14 @@ class LoansTest < ActionDispatch::IntegrationTest
     book = books(:one)
     post '/loans', params: json(user.id, book.id), headers: { 'Authorization': "Bearer #{@token}" } 
     assert_response :unprocessable_entity
+    assert_equal 'Not enough books available', JSON.parse(@response.body)['error']
+  end
+
+  test "successful book rental" do
+    user = users(:three)
+    book = books(:four)
+    post '/loans', params: json(user.id, book.id), headers: { 'Authorization': "Bearer #{@token}" } 
+    assert_response :success
   end
 
 

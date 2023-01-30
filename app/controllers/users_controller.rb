@@ -49,9 +49,11 @@ class UsersController < ApplicationController
             params.require(:data).require(:attributes).permit(:name, :username, :email, :user_type_id, :password)
         end
         def set_user
-            @user = User.find_by(username: params[:username])
-            if !@user
-                render json: { errors: 'User not found' }, status: :not_found
+            begin
+                @user = User.find_by_username(params[:username])
+                raise ActiveRecord::RecordNotFound, "User not found with username: #{params[:username]}" if !@user
+            rescue ActiveRecord::RecordNotFound => e
+                render json: { errors: e.message }, status: :not_found
             end
         end
 end

@@ -5,6 +5,7 @@ class BooksController < ApplicationController
     # GET/books
     def index
         if params[:term]
+            # Using ransack to filter the query by term
             @term = Book.joins(:author).ransack(params[:term])
             @books = @term.result(distinct: true).where("books.title LIKE :term OR authors.name LIKE :term", term: "%#{params[:term]}%").paginate(page: params[:page], per_page: params[:page_size])
         else
@@ -65,8 +66,9 @@ class BooksController < ApplicationController
             params.require(:data).require(:attributes).permit(:title, :hard_copies)
         end
         def set_book
-            @book = Book.find(params[:id])
-            if !@book
+            begin
+                @book = Book.find(params[:id])
+            rescue ActiveRecord::RecordNotFound => e
                 render json: { errors: 'Book not found' }, status: :not_found
             end
         end

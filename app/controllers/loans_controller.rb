@@ -106,8 +106,9 @@ class LoansController < ApplicationController
             params.require(:data).require(:attributes).permit(:book_id, :user_id, :is_returned)
         end
         def set_loan
-            @loan = Loan.find(params[:id])
-            if !@loan
+            begin
+                @loan = Loan.find(params[:id])
+            rescue ActiveRecord::RecordNotFound => e
                 render json: { errors: 'Loan not found' }, status: :not_found
             end
         end

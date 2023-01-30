@@ -7,9 +7,9 @@ ruby "3.1.3"
 
 ## Dependencies
 
-rails  7.0.4
+rails  "7.0.4"
 
-sqlite3 1.4.0
+sqlite3 ""1.4.0"
 
 ## Configuration
 
@@ -36,6 +36,11 @@ Populate database with some dummy data.
 
 ```
 rails db:seed
+```
+## Run server
+
+```
+rails s
 ```
 
 ## API
@@ -84,6 +89,7 @@ GET/PUT/POST/DELETE /books
 GET/PUT/POST/DELETE /loans
 GET /out-of-stock
 ```
+
 ## Testing
 
 create and migrate test database
@@ -99,11 +105,13 @@ rails db:fixtures:load RAILS_ENV=test
 ```
 
 ### Model tests:
+```
+rails test test/models/loan_test.rb
 
-models/loan_test.rb
-
-models/user_test.rb
+rails test test/models/user_test.rb
+```
 
 ### Integration test:
-
-integration/loans_test.rb
+```
+rails test test/integration/loans_test.rb
+```
