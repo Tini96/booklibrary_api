@@ -5,8 +5,13 @@ class UsersController < ApplicationController
 
     # GET /users
     def index
-        @users = User.all.paginate(page: params[:page], per_page: params[:page_size])
-        render json: @users, include: '*', status: :ok
+        begin
+            @users = User.all.paginate(page: params[:page], per_page: params[:page_size])
+            render json: @users, include: '*', status: :ok
+        rescue => e
+            logger.error "#{e.message}"
+            render json: { errors: 'Server error' }, status: :internal_server_error
+        end
     end
 
     # GET /users/{username}
@@ -16,27 +21,37 @@ class UsersController < ApplicationController
 
     # POST /users
     def create
-        user_data = user_params
-        user_data["user_type_id"] = params[:data][:relationships]["user-type"][:data][:id]
-        @user = User.new(user_data)
-        if @user.save
-            render json: @user, status: :created
-        else
-            render json: { errors: @user.errors.full_messages },
-            status: :unprocessable_entity
+        begin
+            user_data = user_params
+            user_data["user_type_id"] = params[:data][:relationships]["user-type"][:data][:id]
+            @user = User.new(user_data)
+            if @user.save
+                render json: @user, status: :created
+            else
+                render json: { errors: @user.errors.full_messages },
+                status: :unprocessable_entity
+            end
+        rescue => e
+            logger.error "#{e.message}"
+            render json: { errors: 'Server error' }, status: :internal_server_error
         end
     end
 
     # PUT /users/{username}
     def update
-        user_data = user_params
-        user_data["user_type_id"] = params[:data][:relationships]["user-type"][:data][:id]
-        unless @user.update(user_data)
-            render json: { errors: @user.errors.full_messages},
-                status: :unprocessable_entity
-        end
-        
-        render json: @user, status: :ok 
+        begin
+            user_data = user_params
+            user_data["user_type_id"] = params[:data][:relationships]["user-type"][:data][:id]
+            unless @user.update(user_data)
+                render json: { errors: @user.errors.full_messages},
+                    status: :unprocessable_entity
+            end
+            
+            render json: @user, status: :ok
+        rescue => e
+            logger.error "#{e.message}"
+            render json: { errors: 'Server error' }, status: :internal_server_error
+        end 
     end
 
     # DELETE /users/{username}
@@ -53,6 +68,7 @@ class UsersController < ApplicationController
                 @user = User.find_by_username(params[:username])
                 raise ActiveRecord::RecordNotFound, "User not found with username: #{params[:username]}" if !@user
             rescue ActiveRecord::RecordNotFound => e
+                logger.error "#{e.message}"
                 render json: { errors: e.message }, status: :not_found
             end
         end

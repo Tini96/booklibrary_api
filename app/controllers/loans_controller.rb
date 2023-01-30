@@ -4,12 +4,17 @@ class LoansController < ApplicationController
 
     # GET /loans
     def index
-        if @current_user.member?
-            @loans = Loan.all.where(user_id: @current_user.id).paginate(page: params[:page], per_page: params[:page_size])
-        else
-            @loans = Loan.all.paginate(page: params[:page], per_page: params[:page_size])
+        begin
+            if @current_user.member?
+                @loans = Loan.all.where(user_id: @current_user.id).paginate(page: params[:page], per_page: params[:page_size])
+            else
+                @loans = Loan.all.paginate(page: params[:page], per_page: params[:page_size])
+            end
+            render json: @loans,include: '*',  status: :ok
+        rescue => e
+            logger.error "#{e.message}"
+            render json: { errors: 'Server error' }, status: :internal_server_error
         end
-        render json: @loans,include: '*',  status: :ok
     end
 
     # GET /loans/{id}
@@ -20,33 +25,38 @@ class LoansController < ApplicationController
     # POST /loans
     def create
         Loan.transaction do
-            loan_data = loan_params
-            loan_data["user_id"] = params[:data][:relationships][:user][:data][:id]
-            loan_data["book_id"] = params[:data][:relationships][:book][:data][:id]
+            begin
+                loan_data = loan_params
+                loan_data["user_id"] = params[:data][:relationships][:user][:data][:id]
+                loan_data["book_id"] = params[:data][:relationships][:book][:data][:id]
 
-            #Make new Loan and lock the table to prevent rental of the same book
-            loan = Loan.lock.new(user_id: loan_data[:user_id], book_id: loan_data[:book_id])
-            book = loan.book
-            member = loan.user
-            #Check if the user is a member
-            if member.member?
-                #Check if a maximum is reached
-                if member.max_number_of_loans?
-                    render json: { error: 'The user has reached the maximum book borrowing limit.' }, status: :unprocessable_entity             
-                else
-                    #Check if the book is out of stock
-                    if !book.out_of_stock?
-                        if loan.save!
-                            render json: loan, status: :created
-                        else
-                            render json: loan.errors, status: :unprocessable_entity
-                        end
+                #Make new Loan and lock the table to prevent rental of the same book
+                loan = Loan.lock.new(user_id: loan_data[:user_id], book_id: loan_data[:book_id])
+                book = loan.book
+                member = loan.user
+                #Check if the user is a member
+                if member.member?
+                    #Check if a maximum is reached
+                    if member.max_number_of_loans?
+                        render json: { error: 'The user has reached the maximum book borrowing limit.' }, status: :unprocessable_entity             
                     else
-                        render json: { error: 'Not enough books available' }, status: :unprocessable_entity
+                        #Check if the book is out of stock
+                        if !book.out_of_stock?
+                            if loan.save!
+                                render json: loan, status: :created
+                            else
+                                render json: loan.errors, status: :unprocessable_entity
+                            end
+                        else
+                            render json: { error: 'Not enough books available' }, status: :unprocessable_entity
+                        end
                     end
-                 end
-            else
-                render json: { error: 'User is not a member' }, status: :unprocessable_entity
+                else
+                    render json: { error: 'User is not a member' }, status: :unprocessable_entity
+                end
+            rescue => e
+                logger.error "#{e.message}"
+                render json: { errors: 'Server error' }, status: :internal_server_error
             end
             
         end
@@ -89,7 +99,11 @@ class LoansController < ApplicationController
                         status: :unprocessable_entity
                 end
             rescue ActiveRecord::RecordNotFound
+                logger.error "#{e.message}"
                 render json: {errors: "Record not found"}, status: :not_found
+            rescue => e
+                logger.error "#{e.message}"
+                render json: { errors: 'Server error' }, status: :internal_server_error
             end
         end     
         
@@ -98,7 +112,12 @@ class LoansController < ApplicationController
 
     # DELETE /loans/{:id}
     def destroy
-        @loan.destroy
+        begin
+            @loan.destroy
+        rescue => e
+            logger.error "#{e.message}"
+            render json: { errors: 'Server error' }, status: :internal_server_error
+        end
     end
 
     private
@@ -109,6 +128,7 @@ class LoansController < ApplicationController
             begin
                 @loan = Loan.find(params[:id])
             rescue ActiveRecord::RecordNotFound => e
+                logger.error "#{e.message}"
                 render json: { errors: 'Loan not found' }, status: :not_found
             end
         end

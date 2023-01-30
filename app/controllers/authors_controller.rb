@@ -4,14 +4,19 @@ class AuthorsController < ApplicationController
 
     # GET/books
     def index
-        if params[:term]
-            # Using ransack to filter the query by term
-            @term = Author.joins(:books).ransack(params[:term])
-            @authors = @term.result(distinct: true).where("authors.name LIKE :term OR books.title LIKE :term", term: "%#{params[:term]}%").paginate(page: params[:page], per_page: params[:page_size])
-        else
-            @authors = Author.all.paginate(page: params[:page], per_page: params[:page_size])
+        begin
+            if params[:term]
+                # Using ransack to filter the query by term
+                @term = Author.joins(:books).ransack(params[:term])
+                @authors = @term.result(distinct: true).where("authors.name LIKE :term OR books.title LIKE :term", term: "%#{params[:term]}%").paginate(page: params[:page], per_page: params[:page_size])
+            else
+                @authors = Author.all.paginate(page: params[:page], per_page: params[:page_size])
+            end
+            render json: @authors, include: '*', status: :ok
+        rescue => e
+            logger.error "#{e.message}"
+            render json: { errors: 'Server error' }, status: :internal_server_error
         end
-        render json: @authors, include: '*', status: :ok
     end
 
     # GET /author/{id}
@@ -21,25 +26,35 @@ class AuthorsController < ApplicationController
 
     # POST /author
     def create
-        @author = Author.new(author_params)
-        if @author.save
-            render json: @author, status: :created
-        else
-            render json: { errors: @author.errors.full_messages },
-            status: :unprocessable_entity
+        begin
+            @author = Author.new(author_params)
+            if @author.save
+                render json: @author, status: :created
+            else
+                render json: { errors: @author.errors.full_messages },
+                status: :unprocessable_entity
+            end
+        rescue => e
+            logger.error "#{e.message}"
+            render json: { errors: 'Server error' }, status: :internal_server_error
         end
     end
 
     # PUT /author/{:id}
 
     def update
-        author_data = author_params
-        unless @author.update(author_data)
-            render json: { errors: @author.errors.full_messages},
-                status: :unprocessable_entity
+        begin
+            author_data = author_params
+            unless @author.update(author_data)
+                render json: { errors: @author.errors.full_messages},
+                    status: :unprocessable_entity
+            end
+            
+            render json: @author,  status: :ok 
+        rescue => e
+            logger.error "#{e.message}"
+            render json: { errors: 'Server error' }, status: :internal_server_error
         end
-        
-        render json: @author,  status: :ok 
     end
 
     # DELETE /author/{:id}
@@ -55,6 +70,7 @@ class AuthorsController < ApplicationController
             begin
                 @author = Author.find(params[:id])
             rescue ActiveRecord::RecordNotFound => e
+                logger.error "#{e.message}"
                 render json: { errors: 'Author not found' }, status: :not_found
             end
         end
